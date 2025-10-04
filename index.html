@@ -9,10 +9,8 @@
       margin: 0;
       padding: 0;
       text-align: center;
-      color: white;
-      background: linear-gradient(-45deg, #ff6ce4, #7873f5, #42e695, #fddb92);
-      background-size: 400% 400%;
-      animation: gradientBG 5s ease infinite;
+      color: black; /* fixed missing semicolon */
+      background: #292929; /* example background */
     }
     
     @keyframes neonGlow {
@@ -82,6 +80,7 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.5);
       transition: transform 0.2s, background 0.3s;
       cursor: pointer;
+      max-width: 90vw;
     }
 
     .card:hover {
@@ -101,6 +100,7 @@
       font-size: 18px;
       font-weight: bold;
       margin: 10px 0;
+      color: white;
     }
 
     .followers {
@@ -108,12 +108,14 @@
       color: #bbb;
       margin: 5px 0;
       display: none;
+      color:white
     }
 
     .scoreboard {
       margin-top: 20px;
       font-size: 18px;
       font-weight: bold;
+      color:white
   }
 
     .message {
@@ -169,9 +171,8 @@
       font-style: italic;
     }
     #gameQuestion {
-  color: #00bfff;   
-  text-shadow: 0 0 5px #000000, 0 0 10px #ff6ce4; /* optional glow */
-  font-size: 32px;   /* adjust size if needed */
+  color:white;   
+  font-size: 40px;   /* adjust size if needed */
   font-weight: bold;
 }
     #musicSeek {
@@ -219,9 +220,6 @@
 
     /* ✅ Music button styling */
     #musicBtn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
       padding: 10px 18px;
       font-size: 14px;
       border-radius: 8px;
@@ -231,11 +229,52 @@
       color: white;
       transition: background 0.2s, transform 0.2s;
     }
+    
+    #musicControls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  text-align: center;
+}
+
+#musicControls input[type="range"] {
+  width: 200px;
+  margin-bottom: 2px;
+}
+
+#musicControls .time {
+  color: white;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
 
     #musicBtn:hover {
       background: #b20710;
       transform: scale(1.05);
     }
+
+#bonusLink {
+  position: fixed;
+  bottom: 20px; /* distance from bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 20px;
+  font-weight: bold;
+  z-index: 100; /* ensures it’s on top of other elements */
+}
+
+#bonusLink a {
+  color: #00ffff;
+  text-decoration: none;
+  text-shadow: 0 0 5px #00ffff, 0 0 10px #00bfff;
+  transition: transform 0.2s, text-shadow 0.2s;
+}
+
+#bonusLink a:hover {
+  transform: scale(1.1);
+  text-shadow: 0 0 10px #00ffff, 0 0 20px #00bfff;
+}
+
  
   </style>
 </head>
@@ -247,20 +286,22 @@
 
   <h1 id="gameQuestion">Who has more subscribers?</h1>
   
- <div style="position: absolute; top: 20px; right: 20px; text-align: center;">
-  <!-- Music seek slider -->
-  <input type="range" id="musicSeek" min="0" max="100" value="0" step="1" style="width: 200px; margin-bottom: 5px;">
-  
-  <!-- Play/Pause button -->
-  <button id="musicBtn" onclick="toggleMusic()">▶ Play Music</button>
-</div>
+
+
 
 <audio id="bgm" loop>
   <source src="Jukebox2.mp3" type="audio/mpeg">
   Your browser does not support the audio element.
 </audio>
 
-
+<div id="musicControls">
+   <input type="range" id="musicSeek" min="0" max="100" value="0" step="1" style="width: 200px; margin-bottom: 2px;">
+    <div style="color: white; font-size: 12px; margin-bottom: 5px;">
+      <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+    </div>
+    <button id="musicBtn" onclick="toggleMusic()">▶ Play Music</button>
+  </div>
+</div>
 
 
   <div class="container">
@@ -288,6 +329,9 @@
   <div class="progress"><div id="bar"></div></div>
 
   <p class="message" id="message"></p>
+  <p id="bonusLink">
+  <a href="https://www.youtube.com/watch?v=fwyCqQRvkrI" target="_blank">🎁 Click Here For Bonus Points!</a>
+</p>
 
   <script>
   // ✅ Music toggle
@@ -317,6 +361,20 @@ bgm.addEventListener("timeupdate", () => {
 seekBar.addEventListener("input", () => {
   if (bgm.duration) {
     bgm.currentTime = (seekBar.value / 100) * bgm.duration;
+  }
+});
+
+function formatTime(seconds) {
+  let m = Math.floor(seconds / 60);
+  let s = Math.floor(seconds % 60);
+  return `${m}:${s < 10 ? '0' + s : s}`;
+}
+
+bgm.addEventListener("timeupdate", () => {
+  if (bgm.duration) {
+    seekBar.value = (bgm.currentTime / bgm.duration) * 100;
+    document.getElementById("currentTime").innerText = formatTime(bgm.currentTime);
+    document.getElementById("duration").innerText = formatTime(bgm.duration);
   }
 });
 
